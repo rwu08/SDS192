@@ -1,0 +1,97 @@
+---
+title: "Lab 8"
+author: "Renee Wu"
+date: "`r Sys.Date()`"
+output: openintro::lab_report
+---
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(openintro)
+library(babynames)
+```
+
+### Tidy Data
+
+```{r}
+ssa_births <- babynames %>%
+  group_by(year) %>%
+  summarize(num_rows = n(), births = sum(n))
+
+total_births <- births %>%
+  left_join(ssa_births, by = "year")
+
+head(total_births)
+
+total_births <- total_births %>%
+  select(-num_rows) %>%
+  rename(census = births.x, ssa = births.y)
+
+ggplot(data = total_births, aes(x = year, y = census)) +
+  geom_line() + 
+  geom_line(aes(y = ssa))
+
+dim(total_births)
+
+births_tidy <- total_births %>%
+  pivot_longer(-year, names_to = "source", values_to = "births")
+
+head(births_tidy)
+dim(births_tidy)
+
+ggplot(data = births_tidy, aes(x = year, y = births)) +
+  geom_line(aes(color = source)) 
+```
+
+### Exercise 1
+
+I chose the income per person(GDP/capita, PPP$inflation-adjusted) data set. 
+
+
+### Exercise 2
+
+```{r}
+income_data<-read_csv("income.csv")
+```
+
+### Exercise 3
+
+The variable in the first row is already "country". 
+
+### Exercise 4
+
+```{r}
+dim(income_data)
+```
+The dimensions of the dataframe are 193x242. 
+
+### Exercise 5
+
+It should have 46513 rows. 
+
+### Exercise 6
+
+```{r}
+income_tidy<-income_data%>%
+  pivot_longer(-country)%>%
+  rename(year=name,income=value)
+
+income_tidy
+```
+
+### Exercise 7
+
+```{r}
+typeof(income_tidy$year)
+income_tidy%>%
+  mutate(year=parse_number(year))
+```
+
+
+### Exercise 8
+```{r}
+ggplot(income_tidy,aes(x=year,y=income,color=country))+
+  geom_point()+
+  scale_color_discrete(guide=FALSE)
+```
+
