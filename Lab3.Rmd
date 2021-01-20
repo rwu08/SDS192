@@ -1,0 +1,96 @@
+---
+title: "Lab 3: ggplot2"
+author: "Renee Wu"
+date: "`r Sys.Date()`"
+output: openintro::lab_report
+---
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(openintro)
+library(ggplot2)
+```
+
+### Exercise 1
+
+```{r}
+housing <- read.csv("http://www.science.smith.edu/~jcrouser/SDS192/landdata-states.csv")
+glimpse(housing)
+hp2013Q1 <- housing %>%
+  filter(Date == 2013.25)
+
+ggplot(hp2013Q1, aes(y = Structure.Cost, x = Land.Value)) +
+  geom_point()
+
+home_value_plot<-ggplot(hp2013Q1, aes(y=Home.Value,x=Land.Value))+geom_point()+labs(x="Land Value", y="Home Value", title="2013 Q1 Home Values and Land Values")
+```
+
+
+### Exercise 2
+
+```{r}
+home_value_plot
+```
+
+
+
+
+### Exercise 3
+
+It does not make sense to connect the observations with geom_line() in this case since line graphs imply a change over time. However, since the above plot is a the structure value as a function of the land value, there is no time variation. 
+
+
+
+### Exercise 4
+```{r}
+home_value_plot<-home_value_plot+aes(color=Structure.Cost)
+home_value_plot
+```
+
+
+### Exercise 5
+```{r}
+home_plot <- ggplot(housing, aes(y = State, x = Home.Price.Index)) + 
+  geom_point(aes(color = Date),
+             alpha = 0.3,
+             size = 1.5,
+             position = position_jitter(width = 0, height = 0.25))
+
+home_plot <- home_plot + 
+  scale_y_discrete(name = "State Abbreviation")
+
+home_plot + 
+  scale_color_continuous(breaks = c(1975.25, 1994.25, 2013.25),
+                         labels = c(1971, 1994, 2013))
+
+home_plot <- home_plot +
+  scale_color_continuous(breaks = c(1975.25, 1994.25, 2013.25),
+                         labels = c(1971, 1994, 2013),
+                         low = "blue", high = "red")
+home_plot<-home_plot+geom_vline(xintercept = 1, linetype="dashed")
+home_plot
+```
+
+
+
+### Exercise 6
+
+To place the dotted vertical line behind the previous dotted values, apply the geom_vline() function prior to the geom_point() layer. 
+
+
+### Exercise 7
+
+The following is a plot of home prices faceted by region. 
+
+```{r}
+housing%>%
+  drop_na(region)%>%
+  ggplot(aes(x=Date,y=Home.Value))+
+  geom_line()+
+  labs(y="Home Value", title="Home Values by Region from 1975-2013")
+  facet_wrap(~region,ncol=10)
+
+```
+
+
+

@@ -1,0 +1,73 @@
+---
+title: "Lab 4: ColorBrewer and ggthemes"
+author: "Renee Wu"
+date: "`r Sys.Date()`"
+output: openintro::lab_report
+---
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(RColorBrewer)
+```
+
+### Exercise 1
+```{r}
+glimpse(ToothGrowth)
+summary(ToothGrowth)
+ToothGrowth<-ToothGrowth%>%mutate(dose=factor(dose))
+summary(ToothGrowth)
+my_plot<-ggplot(data=ToothGrowth,aes(x=dose,y=len,fill=dose))+geom_boxplot()
+my_plot
+```
+
+
+### Exercise 2
+```{r}
+my_plot+scale_fill_manual(values=c("#004f71","#465a01","#981d97"))
+display.brewer.all()
+my_plot+scale_fill_brewer(palette="Set3")
+my_plot+scale_fill_brewer(palette="Accent")
+my_plot+scale_fill_brewer(palette="Oranges")
+```
+### Exercise 3
+```{r}
+library(nasaweather)
+```
+
+### Exercise 4
+```{r}
+my_storms<-storms%>%
+  filter(year==1995)
+
+storms_plot<-ggplot(my_storms,aes(x=long,y=lat,color=wind))+
+  geom_point()+
+  facet_wrap(~name,ncol=5)+
+  theme(panel.spacing.x = unit(4, "mm"),panel.spacing.y = unit(4,"mm"))+
+  labs(x="Longitude",y="Latitude",title="Position of Storms in 1995")
+
+storms_plot
+```
+
+### Exercise 5 
+
+A sequential color scheme would be more appropriate to represent wind speed since the severity of the storm increases with the increase of wind speed. 
+
+### Exercise 6
+
+```{r}
+library(ggthemes)
+my_plot + 
+  theme_economist() + 
+  scale_fill_economist()
+
+#Using gpa dataset: 
+gpa
+gpa_plot<-ggplot(gpa,aes(x=studyweek,y=gpa,color=gender))+geom_point()
+gpa_plot+theme_few()+scale_fill_brewer("Set3")+theme(legend.position = "right",legend.background = element_rect(fill="white",size=0.5,linetype = "solid"))+labs(x="Hours of Studying Per Week",y="GPA",color="Gender",title="The Effect of Studying on GPA",subtitle="Based on a survey of 55 Duke University students")
+
+```
+
+
+
+
+

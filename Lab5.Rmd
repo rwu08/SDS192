@@ -1,0 +1,94 @@
+---
+title: "Lab 5"
+author: "Renee Wu"
+date: "`r Sys.Date()`"
+output: openintro::lab_report
+---
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(openintro)
+
+```
+
+### Exercise 1
+
+```{r}
+library(babynames)
+
+head(babynames)
+
+babynames%>%
+  select(year,name,n)%>%
+  head()
+
+babynames%>%
+  filter(name=="Bella")%>%
+  head()
+
+bella<-babynames%>%
+  filter(name=="Bella")%>%
+  select(year,name,sex,n)
+
+dim(bella)
+head(bella)
+class(bella)
+
+ggplot(data=bella,aes(x=year,y=n))+
+  geom_line(aes(color=sex))
+
+babynames<-babynames%>%
+  mutate(popular=prop>0.01)
+
+popular<-babynames%>%
+  filter(is_popular)
+
+nrow(popular)
+head(popular)
+popular%>%
+  arrange(desc(prop))
+```
+The prop variable represented the number of babies with that name divided by total number of babies in that year. 
+
+### Exercise 2
+
+```{r}
+babynames%>%
+  filter(name=="John")%>%
+  arrange(desc(prop))
+```
+
+The name John was used most frequently in 1880. 
+
+### Exercise 3
+
+```{r}
+babynames%>%
+  filter(year==1880)%>%
+  arrange(desc(prop))
+```
+
+John was the most popular name in 1880. 
+
+### Exercise 4
+
+In order to find the year in which a name given to male and female babies are about equal, use the summarize() function to subtract the proportion of the total for each sex and arrange by ascending order. 
+
+### Exercise 5
+```{r}
+bella%>%
+  summarize(most_bellas=max(n))
+
+bella%>%
+  summarize(num_rows=n(),most_bellas=max(n))
+```
+The value of num_rows represents the years that were accounted for within finding the year in which the most Bellas were born. 
+
+### Exercise 6
+```{r}
+babynames%>%
+  filter(name=="Jordan")%>%
+  select(-name)%>%
+  arrange(desc(prop))
+```
+
