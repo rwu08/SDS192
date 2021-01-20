@@ -1,0 +1,124 @@
+---
+title: "Lab 6"
+author: "Renee Wu"
+date: "`r Sys.Date()`"
+output: openintro::lab_report
+---
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(openintro)
+library(babynames)
+```
+
+### Exercise 1
+```{r}
+babynames%>%
+  filter(name=="Jackie")
+
+babynames%>%
+  filter(name=="Jackie")%>%
+  group_by(year)
+
+babynames %>%
+  filter(name == "Jackie") %>%
+  group_by(year) %>%
+  summarize(
+    num_sexes = n(), 
+    total = sum(n), 
+    boys = sum(ifelse(sex == "M", n, 0)),
+    girls = total - boys,
+    girl_pct = girls / total,
+    equal=abs(0.5-girl_pct)
+  )%>%
+  arrange(equal)
+```
+In 2006, the name Jackie was given to M and F babies most equally. 
+
+### Exercise 2
+
+```{r}
+babynames%>%
+  group_by(year)%>%
+  summarize(total=sum(n))%>%
+  arrange(desc(total))
+```
+
+1957 had the greatest number of births. 
+
+### Exercise 3
+
+```{r}
+babynames%>%
+  group_by(name)%>%
+  summarize(earliest=min(year),latest=max(year))
+```
+
+
+### Exercise 4
+
+```{r}
+babynames%>%
+  group_by(name)%>%
+  summarize(num_appearances=n())%>%
+  filter(num_appearances==276)
+```
+The fifteen names that have been assigned to both sexes in all 138 years are Francis, James, Jean, Jesse, Jessie, John, Johnnie, Joseph, Lee, Leslie, Marion, Ollie, Sidney, Tommie, and William. 
+
+### Exercise 5
+
+```{r}
+babynames %>%
+  mutate(is_popular = prop >= 0.01) %>%
+  filter(is_popular == TRUE) %>%
+  group_by(name) %>%
+  summarize(earliest = min(year)) %>%
+  arrange(desc(earliest))
+```
+The youngest popular name is Olivia. 
+
+### Exercise 6
+```{r}
+babynames%>%
+  group_by(year)%>%
+  summarize(num_names=n())%>%
+  arrange(desc(num_names))
+
+babynames%>%
+  group_by(year)%>%
+  filter(sex=="F")%>%
+  summarize(num_names=n())%>%
+  arrange(desc(num_names))
+
+babynames%>%
+  group_by(year)%>%
+  filter(sex=="M")%>%
+  summarize(num_names=n())%>%
+  arrange(desc(num_names))
+```
+The diversity of names has increased in the present day in comparison to the past, from 1935 names at the least in 1881 and 35070 names in 2008. This trend is seen in both boys and girls, with overall less diversity in names for boys. 
+
+### Exercise 7
+```{r}
+babynames %>%
+  filter(year >= 1990 & year < 2000) %>%
+  group_by(name) %>%
+  summarize(num_births = sum(n)) %>%
+  arrange(desc(num_births))
+```
+
+### Exercise 8
+```{r}
+library(nycflights13)
+library(ggthemes)
+avg_delay<-nycflights%>%
+  group_by(origin)%>%
+  summarize(avg_arr_delay=mean(arr_delay))
+
+ggplot(data=avg_delay,aes(x=origin,y=avg_arr_delay,fill=origin))+
+  geom_col()+
+  labs(title="Average Flight Arrival Delay for NYC Airports",x="Airport",y="Average Delay (minutes)")+
+  theme_fivethirtyeight()
+
+...
+
