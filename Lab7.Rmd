@@ -1,0 +1,158 @@
+---
+title: "Lab 7"
+author: "Renee Wu"
+date: "`r Sys.Date()`"
+output: openintro::lab_report
+---
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(openintro)
+library(babynames)
+```
+
+### Joining Two Tables 
+```{r}
+head(births)
+census_births<-births
+ssa_births<-babynames%>%
+  filter(year<2012)%>%
+  group_by(year)%>%
+  summarize(N=n(),births=sum(n))
+
+census_births %>%
+  summarize(
+    N = n(),
+    earliest = min(year),
+    latest = max(year)
+  )
+ssa_births %>%
+  summarize(
+    N = n(),
+    earliest = min(year),
+    latest = max(year)
+  )
+census_births %>%
+  inner_join(ssa_births, by = "year") %>%
+  summarize(
+    N = n(),
+    earliest = min(year),
+    latest = max(year)
+  )
+
+total_births <- census_births %>%
+  left_join(ssa_births, by = "year")
+
+total_births %>%
+  filter(is.na(births.y))
+
+total_births %>%
+  summarize(
+    N = n(),
+    earliest = min(year),
+    latest = max(year)
+  )
+
+total_births <- census_births %>%
+  right_join(ssa_births, by = "year")
+
+total_births %>%
+  filter(is.na(births.x))
+
+total_births %>%
+  summarize(
+    N = n(),
+    earliest = min(year),
+    latest = max(year)
+  )
+
+ssa_births %>%
+  left_join(census_births, by = "year") %>%
+  summarize(
+    N = n(),
+    earliest = min(year),
+    latest = max(year)
+  )
+
+total_births <- census_births %>%
+  full_join(ssa_births, by = "year")
+
+total_births %>%
+  filter(is.na(births.x) | is.na(births.y))
+
+total_births %>%
+  summarize(
+    N = n(),
+    earliest = min(year),
+    latest = max(year)
+  )
+
+total_births %>%
+  summarize(
+    N = n(),
+    correlation = cor(births.x, births.y,
+      use = "complete.obs"
+    )
+  )
+
+library(ggplot2)
+ggplot(data = total_births, aes(x = year, y = births.x)) +
+  geom_line() +
+  geom_line(aes(y = births.y))
+```
+
+### Exercise 1
+```{r}
+library(nycflights13)
+flights%>%
+  group_by(carrier)%>%
+  summarize(avg_delay=mean(arr_delay,na.rm=TRUE))%>%
+  left_join(airlines,by=c("carrier"="carrier"))
+```
+
+
+### Exercise 2
+
+```{r}
+flights%>%
+  group_by(dest)%>%
+  summarize(N=n())%>%
+  arrange(desc(N))%>%
+  left_join(airports,by=c("dest"="faa"))
+```
+The airport that was the most common destination from NYC in 2013 is Chicago O'Hare International Airport. 
+
+### Exercise 3
+
+```{r}
+flights%>%
+  left_join(planes,by=c("tailnum"="tailnum"))%>%
+  group_by(manufacturer,model)%>%
+  summarize(N=n())%>%
+  arrange(desc(N))
+```
+The most commonly used plane is the Airbus A320-232. 
+
+### Exercise 4
+
+```{r}
+flights%>%
+  left_join(airports,by=c("dest"="faa"))%>%
+  filter(is.na(name))%>%
+  group_by(dest)%>%
+  summarize(N=n())
+```
+There were flights going to BQN, PSE, SJU, and STT which do not appear in the airports table. 
+
+### Exercise 5
+
+```{r}
+flights%>%
+  left_join(planes,by=c("tailnum"="tailnum"))%>%
+  filter(is.na(model))%>%
+  group_by(tailnum)%>%
+  summarize(N=n())%>%
+  arrange(desc(N))
+```
+
+
